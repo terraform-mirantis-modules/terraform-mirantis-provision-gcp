@@ -1,70 +1,87 @@
-# resource "google_compute_autoscaler" "default" {
-#   name   = var.name
-#   zone   = "us-central1-f"
-#   target = google_compute_instance_group_manager.default.id
+data "google_compute_zones" "available" {}
 
-#   autoscaling_policy {
-#     max_replicas    = 5
-#     min_replicas    = 1
-#     cooldown_period = 60
+output "zones" {
+  value = data.google_compute_zones.available.names
+}
 
-#     metric {
-#       name                       = "pubsub.googleapis.com/subscription/num_undelivered_messages"
-#       filter                     = "resource.type = pubsub_subscription AND resource.label.subscription_id = our-subscription"
-#       single_instance_assignment = 65535
-#     }
-#   }
-# }
+resource "random_string" "random_suffix" {
+  length  = 5
+  special = false
+  numeric = false
+  upper   = false
+}
 
-# resource "google_compute_instance_template" "default" {
-#   name           = "my-instance-template"
-#   machine_type   = "e2-medium"
-#   can_ip_forward = false
+resource "google_compute_autoscaler" "provision" {
+  name   = "${var.name}-${random_string.random_suffix.result}"
+  zone   = data.google_compute_zones.available.names[0]
+  target = google_compute_instance_group_manager.provision.self_link
 
-#   tags = ["foo", "bar"]
+  autoscaling_policy {
+    max_replicas    = var.vm_count
+    min_replicas    = var.vm_count
+    cooldown_period = 60
+  }
+}
 
-#   disk {
-#     source_image = data.google_compute_image.debian_9.id
-#   }
+resource "google_compute_instance_template" "provision" {
+  name           = "${random_string.random_suffix.result}-template"
+  machine_type   = var.machine_type
+  can_ip_forward = false
 
-#   network_interface {
-#     network = "default"
-#   }
+  tags = concat(var.extra_tags, [for t in var.tags : lower(t)])
 
-#   metadata = {
-#     foo = "bar"
-#   }
+  disk {
+    source_image = var.source_image.self_link
+    disk_size_gb = var.volume_size
+    disk_type    = "pd-balanced"
+  }
 
-#   service_account {
-#     scopes = ["userinfo-email", "compute-ro", "storage-ro"]
-#   }
-# }
+  dynamic "network_interface" {
+    // This can be specified multiple times
+    for_each = var.subnet
+    content {
+      subnetwork = network_interface.value
+      access_config {
+        // Ephemeral IP
+      }
+    }
+  }
 
-# resource "google_compute_target_pool" "default" {
-#   provider = google-beta
+  metadata = {
+    name     = var.name
+    ssh-keys = "${var.ssh_user}:${var.pub_key}"
+  }
 
-#   name = "my-target-pool"
-# }
+  metadata_startup_script = var.user_data
 
-# resource "google_compute_instance_group_manager" "default" {
-#   provider = google-beta
+  service_account {
+    scopes = ["userinfo-email", "compute-ro", "storage-ro"]
+  }
+}
 
-#   name = "my-igm"
-#   zone = "us-central1-f"
+resource "google_compute_target_pool" "provision" {
+  name = "${random_string.random_suffix.result}-target-pool"
+}
 
-#   version {
-#     instance_template = google_compute_instance_template.default.id
-#     name              = "primary"
-#   }
+resource "google_compute_instance_group_manager" "provision" {
+  name = "${random_string.random_suffix.result}-igm"
+  zone = data.google_compute_zones.available.names[0]
 
-#   target_pools       = [google_compute_target_pool.default.id]
-#   base_instance_name = "autoscaler-sample"
-# }
+  named_port {
+    name = "http"
+    port = 80
+  }
 
-# data "google_compute_image" "debian_9" {
-#   provider = google-beta
+  named_port {
+    name = "https"
+    port = 443
+  }
 
-#   family  = "debian-11"
-#   project = "debian-cloud"
-# }
+  version {
+    instance_template = google_compute_instance_template.provision.self_link
+    name              = "primary"
+  }
 
+  target_pools       = [google_compute_target_pool.provision.self_link]
+  base_instance_name = var.name
+}

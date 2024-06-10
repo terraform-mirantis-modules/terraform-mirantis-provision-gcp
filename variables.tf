@@ -21,7 +21,41 @@ variable "ssh_pk_location" {
   default     = ""
 }
 
-# variable "windows_password" {
-#   description = "Password to use with windows & winrm"
-#   type        = string
-# }
+variable "windows_password" {
+  description = "Password to use with windows & winrm"
+  type        = string
+}
+
+# === Machines ===
+variable "nodegroups" {
+  description = "A map of machine group definitions"
+  type = map(object({
+    platform              = string
+    type                  = string
+    count                 = number
+    volume_size           = number
+    role                  = string
+    public                = bool
+    user                  = optional(string)
+    user_data             = optional(string)
+    instance_profile_name = optional(string)
+    tags                  = optional(map(string), {})
+  }))
+  default = {}
+}
+
+# ===  Networking ===
+variable "pub_subnets" {
+  description = "Public subnets configuration"
+  type = map(object({
+    cidr       = string
+    nodegroups = list(string)
+  }))
+  default = {}
+}
+
+variable "common_tags" {
+  description = "Tags that should be applied to all resources created"
+  type        = list(string)
+  default     = []
+}

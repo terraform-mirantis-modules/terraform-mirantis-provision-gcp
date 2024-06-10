@@ -12,7 +12,3 @@ resource "local_sensitive_file" "ssh_private_key" {
 output "public_key" {
   value = module.provision.public_key
 }
-
-output "private_key" {
-  value = local_sensitive_file.ssh_private_key
-}
