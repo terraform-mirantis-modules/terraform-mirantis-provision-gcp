@@ -40,9 +40,12 @@ resource "google_compute_instance_template" "provision" {
     // This can be specified multiple times
     for_each = var.subnet
     content {
-      subnetwork = network_interface.value
-      access_config {
-        // Ephemeral IP
+      subnetwork = network_interface.value.id
+      dynamic "access_config" {
+        for_each = network_interface.value.private ? [] : [0]
+        content {
+          // Ephemeral IP
+        }
       }
     }
   }

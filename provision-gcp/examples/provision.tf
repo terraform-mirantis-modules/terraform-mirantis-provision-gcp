@@ -19,27 +19,11 @@ locals {
         }
       }
     }
-    "msr" = {
-      description = "MSR ingress for UI and Kube"
-      nodegroups  = [for k, ng in var.nodegroups : k if ng.role == "msr"]
-
-      routes = {
-        "msr" = {
-          port_incoming = 443
-          port_target   = 443
-          protocol      = "TCP"
-        }
-      }
-    }
   }
 }
 
-# output "sub_merged" {
-#   value = module.provision.sub_merged
-# }
-
 module "provision" {
-  source  = "./provision-gcp"
+  source  = "../"
   region  = var.region
   name    = var.name
   project = var.project
@@ -55,10 +39,10 @@ module "provision" {
     user_data : ngd.user_data
     ssh_user : ngd.ssh_user
   } }
-  pub_subnets = var.pub_subnets
-  firewalls   = local.mke_firewalls
-  ingresses   = local.mke_ingresses
-  extra_tags  = var.common_tags
+  subnets    = var.subnets
+  firewalls  = local.mke_firewalls
+  ingresses  = local.mke_ingresses
+  extra_tags = var.common_tags
 }
 
 locals {

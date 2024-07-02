@@ -124,7 +124,8 @@ locals {
   MKE_URL = module.provision.ingresses["mke"].lb_dns
 
   // The SAN URL for the MKE load balancer ingress that is for the MKE load balancer
-  MSR_URL = module.provision.ingresses["msr"].lb_dns
+  # MSR_URL = module.provision.ingresses["msr"].lb_dns
+  MSR_URL = ""
 }
 
 output "MKE_URL" {

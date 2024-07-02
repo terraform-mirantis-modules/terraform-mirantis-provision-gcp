@@ -63,12 +63,13 @@ variable "nodegroups" {
   default = {}
 }
 
-# ===  Networking ===
-variable "pub_subnets" {
+# === Subnets ===
+variable "subnets" {
   description = "Public subnets configuration"
   type = map(object({
     cidr       = string
     nodegroups = list(string)
+    private    = bool
   }))
   default = {}
 }

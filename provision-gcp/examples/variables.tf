@@ -11,7 +11,7 @@ variable "project" {
 }
 
 variable "region" {
-  description = "Azure region for the resources"
+  description = "GCP region for the resources"
   type        = string
 }
 
@@ -44,12 +44,13 @@ variable "nodegroups" {
   default = {}
 }
 
-# ===  Networking ===
-variable "pub_subnets" {
+# ===  Subnets ===
+variable "subnets" {
   description = "Public subnets configuration"
   type = map(object({
     cidr       = string
     nodegroups = list(string)
+    private    = bool
   }))
   default = {}
 }
