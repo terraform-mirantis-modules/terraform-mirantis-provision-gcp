@@ -35,11 +35,12 @@ resource "google_compute_firewall" "vpc_egress" {
 }
 
 resource "google_compute_subnetwork" "public" {
-  for_each      = var.pub_subnets
-  name          = "${each.key}-subnet"
-  description   = "${each.key}-subnet"
-  ip_cidr_range = each.value.cidr
-  region        = var.region
-  network       = google_compute_network.vpc.id
+  for_each                 = var.subnets
+  name                     = "${each.key}-subnet"
+  description              = "${each.key}-subnet"
+  ip_cidr_range            = each.value.cidr
+  region                   = var.region
+  network                  = google_compute_network.vpc.id
+  private_ip_google_access = each.value.private
 }
 

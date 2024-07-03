@@ -1,9 +1,5 @@
 locals {
-  sub_merged = { for sk, sv in google_compute_subnetwork.public : sk => merge(sv, var.pub_subnets[sk]) }
-}
-
-output "sub_merged" {
-  value = local.sub_merged
+  sub_merged = { for sk, sv in google_compute_subnetwork.public : sk => merge(sv, var.subnets[sk]) }
 }
 
 module "nodegroup" {
@@ -18,7 +14,12 @@ module "nodegroup" {
     project   = var.nodegroups[each.key].project
     self_link = var.nodegroups[each.key].self_link
   }
-  subnet      = [for s in local.sub_merged : s.name if contains(s.nodegroups, each.key)]
+  subnet = [
+    for s in local.sub_merged : {
+      id      = s.name
+      private = s.private
+    } if contains(s.nodegroups, each.key)
+  ]
   tags        = [each.key]
   project     = var.project
   extra_tags  = var.extra_tags
@@ -49,9 +50,9 @@ locals {
       private_ip      = i.network_interface[0].network_ip
       private_dns     = "" // there is not private dns in the instance output
       private_address = trimspace(coalesce("", i.network_interface[0].network_ip, " "))
-      public_ip       = i.network_interface[0].access_config[0].nat_ip
+      public_ip       = length(i.network_interface[0].access_config) > 0 ? i.network_interface[0].access_config[0].nat_ip : ""
       public_dns      = "" // there is not public dns in the instance output
-      public_address  = trimspace(coalesce("", i.network_interface[0].access_config[0].nat_ip, " "))
+      public_address  = length(i.network_interface[0].access_config) > 0 ? trimspace(coalesce("", i.network_interface[0].access_config[0].nat_ip, " ")) : ""
     }]
   }) }
 }

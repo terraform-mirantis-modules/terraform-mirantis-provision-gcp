@@ -48,8 +48,11 @@ variable "vm_count" {
 }
 
 variable "subnet" {
-  description = "The subnet names to use for the node group"
-  type        = list(string)
+  description = "Subnet object to create VMs in"
+  type = list(object({
+    id      = string
+    private = bool
+  }))
 }
 
 variable "tags" {
