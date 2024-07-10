@@ -1,9 +1,12 @@
 output "private_key" {
-  value = module.key.private_key
+  description = "Private key for the keypair"
+  value       = module.key.private_key
+  sensitive   = true
 }
 
 output "public_key" {
-  value = module.key.public_key
+  description = "Public key for the keypair"
+  value       = module.key.public_key
 }
 
 output "ingresses" {
