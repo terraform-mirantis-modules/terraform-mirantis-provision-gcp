@@ -1,9 +1,3 @@
-
-# variable "stack" {
-#   description = "Stack name used for labelling resources"
-#   type        = string
-# }
-
 variable "name" {
   description = "Names identifier for the ingress"
   type        = string
