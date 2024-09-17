@@ -9,11 +9,7 @@ module "nodegroup" {
   ssh_user     = var.nodegroups[each.key].ssh_user
   machine_type = var.nodegroups[each.key].type
   vm_count     = var.nodegroups[each.key].count
-  source_image = {
-    family    = var.nodegroups[each.key].family
-    project   = var.nodegroups[each.key].project
-    self_link = var.nodegroups[each.key].self_link
-  }
+  source_image = var.nodegroups[each.key].source_image
   subnet = [
     for s in local.sub_merged : {
       id      = s.name

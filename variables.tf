@@ -47,9 +47,11 @@ variable "firewalls" {
 variable "nodegroups" {
   description = "A map of machine group definitions"
   type = map(object({
-    project               = string
-    family                = string
-    self_link             = string
+    source_image : object({
+      project   = string
+      family    = string
+      self_link = string
+    })
     type                  = string
     count                 = number
     volume_size           = number
