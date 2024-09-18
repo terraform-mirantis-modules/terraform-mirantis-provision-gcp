@@ -28,9 +28,11 @@ module "provision" {
   name    = var.name
   project = var.project
   nodegroups = { for k, ngd in local.nodegroups_wplatform : k => {
-    project : ngd.project
-    family : ngd.family
-    self_link : ngd.self_link
+    source_image : {
+      project : ngd.project
+      family : ngd.family
+      self_link : ngd.self_link
+    }
     type : ngd.type
     count : ngd.count
     volume_size : ngd.volume_size
