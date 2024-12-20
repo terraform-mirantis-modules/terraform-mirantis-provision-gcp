@@ -1,12 +1,5 @@
 locals {
   platform = local.lib_platform_definitions[var.platform_key]
-  user_data_windows = templatefile("${path.module}/userdata_windows.tpl", {
-    windows_administrator_password = var.windows_password
-  })
-}
-
-output "user_data_windows" {
-  value = local.user_data_windows
 }
 
 data "google_compute_image" "upstream" {
@@ -16,10 +9,10 @@ data "google_compute_image" "upstream" {
 }
 
 locals {
-  // combine ami/plaftorm data (and windows user data)
+  // combine ami/plaftorm data
   platform_with_image = merge(local.platform,
     data.google_compute_image.upstream,
-    { key : var.platform_key, name : data.google_compute_image.upstream.name, user_data : startswith(var.platform_key, "windows") ? local.user_data_windows : "" } // TODO: Need to add user_data
+    { key : var.platform_key, name : data.google_compute_image.upstream.name }
   )
 }
 

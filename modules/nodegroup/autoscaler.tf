@@ -51,8 +51,9 @@ resource "google_compute_instance_template" "provision" {
   }
 
   metadata = {
-    name     = var.name
-    ssh-keys = "${var.ssh_user}:${var.pub_key}"
+    name                       = var.name
+    ssh-keys                   = "${var.ssh_user}:${var.pub_key}"
+    windows-startup-script-ps1 = var.user_data
   }
 
   metadata_startup_script = var.user_data
