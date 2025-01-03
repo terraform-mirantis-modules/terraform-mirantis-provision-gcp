@@ -1,4 +1,9 @@
 locals {
+  // Example of user data for a Windows node via a template file
+  user_data_windows = templatefile("${path.module}/example.tpl", {
+    example_var = "example_value"
+  })
+
   // combine the nodegroup definition with the platform data
   nodegroups_wplatform = { for k, ngd in var.nodegroups : k => merge(ngd, local.platforms_with_image[ngd.platform]) }
   mke_ingresses = {
@@ -38,7 +43,7 @@ module "provision" {
     volume_size : ngd.volume_size
     role : ngd.role
     public : ngd.public
-    user_data : ngd.user_data
+    user_data : strcontains(ngd.platform, "windows") ? local.user_data_windows : ngd.user_data
     ssh_user : ngd.ssh_user
   } }
   subnets    = var.subnets
