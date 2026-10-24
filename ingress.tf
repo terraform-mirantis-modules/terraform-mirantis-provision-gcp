@@ -22,19 +22,6 @@ module "ingress" {
   target_pools           = local.mapped_target_pools[each.key]
 }
 
-# tcp mode: point each nodegroup's instance-group manager at the ingress
-# target pool so new instances register automatically.
-locals {
-  tcp_pool_bindings = merge([
-    for ik, iv in var.ingresses : {
-      for ng in iv.nodegroups : "${ik}-${ng}" => {
-        nodegroup = ng
-        pool      = module.ingress[ik].target_pool
-      }
-    } if iv.mode == "tcp"
-  ]...)
-}
-
 // calculated after lb is created
 locals {
   // Add the lb for the lb to the ingress

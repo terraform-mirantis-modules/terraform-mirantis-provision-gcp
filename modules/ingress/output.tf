@@ -4,8 +4,8 @@ output "lb_dns" {
 }
 
 output "target_pool" {
-  description = "Target pool backing the tcp-mode NLB; instances are attached by the root module."
-  value       = var.mode == "tcp" ? google_compute_target_pool.tcp[0].self_link : null
+  description = "Target pool the tcp-mode NLB forwards to (the nodegroup's own pool)."
+  value       = var.mode == "tcp" ? var.target_pools[0] : null
 }
 
 output "google_compute_global_address" {

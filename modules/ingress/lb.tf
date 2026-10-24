@@ -18,6 +18,10 @@ resource "terraform_data" "validate_tcp_rules" {
       condition     = var.region != ""
       error_message = "mode=tcp requires region."
     }
+    precondition {
+      condition     = length(var.target_pools) == 1
+      error_message = "mode=tcp forwards to exactly one nodegroup target pool; list exactly one nodegroup for this ingress."
+    }
   }
 }
 
@@ -142,25 +146,6 @@ resource "google_compute_address" "tcp" {
   region = var.region
 }
 
-# Legacy HTTP health check: target-pool based NLBs accept only legacy checks.
-resource "google_compute_http_health_check" "tcp" {
-  count               = var.mode == "tcp" ? 1 : 0
-  name                = "${var.name}-tcp-basic-${random_string.random_suffix.result}"
-  port                = 10256 # kube-proxy healthz, present on every node
-  request_path        = "/healthz"
-  check_interval_sec  = 5
-  timeout_sec         = 5
-  healthy_threshold   = 2
-  unhealthy_threshold = 2
-}
-
-resource "google_compute_target_pool" "tcp" {
-  count         = var.mode == "tcp" ? 1 : 0
-  name          = "${var.name}-tcp-pool-${random_string.random_suffix.result}"
-  region        = var.region
-  health_checks = [google_compute_http_health_check.tcp[0].name]
-}
-
 resource "google_compute_forwarding_rule" "tcp" {
   for_each              = local.tcp_rules
   name                  = "${each.key}-tcp-rule-${random_string.random_suffix.result}"
@@ -169,5 +154,8 @@ resource "google_compute_forwarding_rule" "tcp" {
   load_balancing_scheme = "EXTERNAL"
   port_range            = "${each.value.port_incoming}-${each.value.port_incoming}"
   ip_address            = google_compute_address.tcp[0].address
-  target                = google_compute_target_pool.tcp[0].self_link
+  # Forward to the nodegroup's own target pool: the instance group manager
+  # registers its instances there, so new instances join automatically. A pool
+  # created here would stay empty and the LB would have no backends.
+  target = var.target_pools[0]
 }
