@@ -8,7 +8,7 @@ resource "google_compute_network" "vpc" {
 
 resource "google_compute_firewall" "vpc_ingress" {
   project = var.project
-  name    = "ingress-vpc"
+  name    = "${var.name}-ingress-vpc"
   network = google_compute_network.vpc.name
 
   direction = "INGRESS"
@@ -22,7 +22,7 @@ resource "google_compute_firewall" "vpc_ingress" {
 
 resource "google_compute_firewall" "vpc_egress" {
   project = var.project
-  name    = "egress-vpc"
+  name    = "${var.name}-egress-vpc"
   network = google_compute_network.vpc.name
 
   direction = "EGRESS"
@@ -36,7 +36,7 @@ resource "google_compute_firewall" "vpc_egress" {
 
 resource "google_compute_subnetwork" "public" {
   for_each                 = var.subnets
-  name                     = "${each.key}-subnet"
+  name                     = "${var.name}-${each.key}-subnet"
   description              = "${each.key}-subnet"
   ip_cidr_range            = each.value.cidr
   region                   = var.region
