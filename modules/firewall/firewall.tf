@@ -11,6 +11,11 @@ resource "google_compute_firewall" "provision" {
   target_tags   = [for n in var.nodegroups : lower(n)]
   allow {
     protocol = var.rules[count.index].protocol
-    ports    = var.rules[count.index].to_port == "*" ? ["0-65535"] : [var.rules[count.index].to_port]
+    ports = (
+      var.rules[count.index].to_port == "*" ? ["0-65535"] :
+      var.rules[count.index].from_port != var.rules[count.index].to_port ?
+      ["${var.rules[count.index].from_port}-${var.rules[count.index].to_port}"] :
+      [var.rules[count.index].to_port]
+    )
   }
 }
