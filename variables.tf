@@ -88,6 +88,9 @@ variable "ingresses" {
       port_target   = number
       protocol      = string
     }))
+    # "l7_https" (default, terminates TLS) or "tcp" (regional external
+    # passthrough NLB; required for mTLS endpoints like the Kubernetes API).
+    mode = optional(string, "l7_https")
     tags = optional(map(string), {})
   }))
   default = {}
