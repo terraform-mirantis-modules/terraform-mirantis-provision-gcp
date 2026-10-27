@@ -40,6 +40,11 @@ module "provision" {
 ## Examples
 If you want to see full example, check the [examples folder](./examples).
 
+## Upgrading
+Moving an existing stack from v0.1.x to v0.2.x replaces subnets and instance
+templates and rolls every node. See [UPGRADING.md](./UPGRADING.md) before
+changing the module version on a live stack.
+
 ## License
 
 This project is licensed under the [MIT License].
