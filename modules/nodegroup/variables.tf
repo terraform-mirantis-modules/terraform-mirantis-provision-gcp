@@ -55,6 +55,12 @@ variable "subnet" {
   }))
 }
 
+variable "public" {
+  description = "Whether instances in this node group should receive an ephemeral public IP. Only honoured for non-private subnets."
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "The tags to apply to the instances"
   type        = list(string)
