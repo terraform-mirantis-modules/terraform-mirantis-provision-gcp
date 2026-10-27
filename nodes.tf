@@ -16,6 +16,7 @@ module "nodegroup" {
       private = s.private
     } if contains(s.nodegroups, each.key)
   ]
+  public      = each.value.public
   tags        = [each.key]
   project     = var.project
   extra_tags  = var.extra_tags

@@ -42,7 +42,9 @@ resource "google_compute_instance_template" "provision" {
     content {
       subnetwork = network_interface.value.id
       dynamic "access_config" {
-        for_each = network_interface.value.private ? [] : [0]
+        // An ephemeral public IP is assigned only when the node group asks to
+        // be public and the subnet itself is not private.
+        for_each = network_interface.value.private || !var.public ? [] : [0]
         content {
           // Ephemeral IP
         }
