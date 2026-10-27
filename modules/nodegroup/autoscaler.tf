@@ -24,10 +24,17 @@ resource "google_compute_autoscaler" "provision" {
 }
 
 resource "google_compute_instance_template" "provision" {
-  name           = "${random_string.random_suffix.result}-template"
+  # name_prefix + create_before_destroy: with a fixed name, any template
+  # change (e.g. user_data) deadlocks - the old template cannot be deleted
+  # while the instance group manager still references it, and the new one
+  # cannot be created under the same name.
+  name_prefix    = "${random_string.random_suffix.result}-template-"
   machine_type   = var.machine_type
   can_ip_forward = false
 
+  lifecycle {
+    create_before_destroy = true
+  }
   tags = concat(var.extra_tags, [for t in var.tags : lower(t)])
 
   disk {
