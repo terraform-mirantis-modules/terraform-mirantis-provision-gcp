@@ -21,11 +21,6 @@ variable "ssh_pk_location" {
   default     = ""
 }
 
-variable "windows_password" {
-  description = "Password to use with windows & winrm"
-  type        = string
-}
-
 # === Machines ===
 variable "nodegroups" {
   description = "A map of machine group definitions"

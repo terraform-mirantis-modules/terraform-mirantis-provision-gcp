@@ -1,1 +1,12 @@
 .terraform/
+
+# A root-level apply writes state and keys beside the module: modules/key
+# emits ssh-keys/<name>-common.pub and modules/ingress emits
+# ssh-keys/<name>-tls.pem. None of it belongs in a published repository.
+# .tfvars.example files are kept because they do not match *.tfvars.
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.pem
+*.key
+ssh-keys/
