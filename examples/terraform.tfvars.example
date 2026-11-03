@@ -1,9 +1,14 @@
-name    = "mirantis"
-project = "test"
+name = "mirantis"
+
+// Your own GCP project id and region. There is no default: the module is
+// published, so it must not carry anyone's project id.
+project = "<your-gcp-project-id>"
 region  = "us-east1"
 
-// Set if having widnows nodes
-windows_password = ""
+// The Windows/WinRM administrator password is generated unless you set one
+// here. Read the effective value after apply with:
+//   terraform output -raw windows_password
+# windows_password = ""
 
 launchpad = {
   drain       = false

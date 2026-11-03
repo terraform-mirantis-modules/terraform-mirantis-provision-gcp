@@ -1,3 +1,5 @@
 *.tfstate*
 ssh-keys/*
 launchpad.y*ml
+*.tfvars
+*.pem

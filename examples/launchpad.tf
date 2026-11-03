@@ -156,7 +156,7 @@ locals {
 
     winrm_address : ngn.public_ip
     winrm_user : ng.ssh_user
-    winrm_password : var.windows_password
+    winrm_password : local.windows_password
     winrm_useHTTPS : ng.winrm_useHTTPS
     winrm_insecure : ng.winrm_insecure
   } if contains(local.launchpad_roles, ng.role) && ng.connection == "winrm" }]...)
@@ -168,8 +168,11 @@ output "launchpad_hosts_ssh" {
   value = local.launchpad_hosts_ssh
 }
 
+// Carries winrm_password, so it must not be printable by a bare
+// `terraform output`.
 output "launchpad_hosts_winrm" {
-  value = local.launchpad_hosts_winrm
+  value     = local.launchpad_hosts_winrm
+  sensitive = true
 }
 
 output "launchpad_yaml" {
