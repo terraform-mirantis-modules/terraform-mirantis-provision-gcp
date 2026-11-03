@@ -28,7 +28,7 @@ locals {
 }
 
 module "provision" {
-  source  = "../"
+  source  = "../../"
   region  = var.region
   name    = var.name
   project = var.project
@@ -58,8 +58,12 @@ locals {
   ingresses  = { for k, i in local.launchpad_ingresses : k => merge({ "name" : k }, i, module.provision.ingresses[k]) }
 }
 
+// local.nodegroups merges in modules/platform output, which is sensitive as
+// a whole, so this output has to be marked sensitive too. Read it with:
+//   terraform output -json nodegroups
 output "nodegroups" {
-  value = local.nodegroups
+  value     = local.nodegroups
+  sensitive = true
 }
 
 output "ingresses" {
