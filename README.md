@@ -38,7 +38,15 @@ module "provision" {
 ```
 
 ## Examples
-If you want to see full example, check the [examples folder](./examples).
+
+The [examples folder](./examples) holds one directory per example:
+
+- [`examples/mke3`](./examples/mke3) - a full MKE 3 stack with the default
+  `l7_https` ingress, producing a `launchpad.yaml`.
+- [`examples/tcp-ingress`](./examples/tcp-ingress) - `ingresses[].mode = "tcp"`,
+  the regional external passthrough NLB needed for client-certificate
+  endpoints such as the Kubernetes API; also covers firewall port ranges, UDP
+  rules and the Google health-check source ranges.
 
 ## Upgrading
 Moving an existing stack from v0.1.x to v0.2.x replaces subnets and instance
