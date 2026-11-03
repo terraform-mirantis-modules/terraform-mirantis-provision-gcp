@@ -164,8 +164,11 @@ locals {
 }
 
 
+// Derived from modules/platform, whose output is sensitive as a whole, so
+// terraform requires the mark to be carried through here.
 output "launchpad_hosts_ssh" {
-  value = local.launchpad_hosts_ssh
+  value     = local.launchpad_hosts_ssh
+  sensitive = true
 }
 
 // Carries winrm_password, so it must not be printable by a bare
