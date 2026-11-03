@@ -1,0 +1,48 @@
+// Stack name used in every resource name and as a network tag (CHANGE THIS).
+// Lowercase letters, digits and hyphens only.
+name = "tcp-ingress-smoke"
+
+// Your own GCP project id and region. There is no default: the module is
+// published, so it must not carry anyone's project id. The region matters
+// here: mode = "tcp" creates regional resources.
+project = "<your-gcp-project-id>"
+region  = "us-east1"
+
+// Exactly one manager nodegroup: a passthrough forwarding rule targets one
+// target pool, so modules/ingress rejects a tcp ingress listing more than
+// one nodegroup.
+nodegroups = {
+  "mgr" = {
+    platform    = "ubuntu_22.04"
+    count       = 1
+    type        = "n1-standard-4"
+    role        = "manager"
+    public      = true
+    volume_size = 100
+  },
+  "wrkr" = {
+    platform    = "ubuntu_22.04"
+    count       = 1
+    type        = "n1-standard-2"
+    role        = "worker"
+    public      = true
+    volume_size = 100
+  },
+}
+
+subnets = {
+  "asubnet" = {
+    cidr       = "172.31.0.0/18"
+    nodegroups = ["mgr", "wrkr"]
+    private    = false
+  },
+}
+
+// A passthrough NLB preserves the client address, so this filter applies to
+// the real client rather than to the load balancer. Narrow it to your own
+// address range before using this anywhere that matters.
+# api_source_ranges = ["0.0.0.0/0"]
+
+extra_tags = [
+  "dev",
+]
