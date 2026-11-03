@@ -37,6 +37,13 @@ module "provision" {
 }
 ```
 
+## Concepts
+
+The model these modules share with the sibling aws, azure and gcp provision
+modules - nodegroups, subnets, security groups, ingresses, and the node
+output shape consumers template against - is described in
+[CONCEPTS.md](./CONCEPTS.md).
+
 ## Examples
 
 The [examples folder](./examples) holds one directory per example:
