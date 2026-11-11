@@ -20,6 +20,7 @@ module "ingress" {
   mode                   = each.value.mode
   region                 = var.region
   target_pools           = local.mapped_target_pools[each.key]
+  labels                 = merge(var.labels, each.value.labels)
 }
 
 // calculated after lb is created

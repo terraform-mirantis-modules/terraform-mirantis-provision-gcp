@@ -58,7 +58,8 @@ terraform destroy
 | `ssh_pk_location` | Directory to write the generated SSH private key into | `./ssh-keys` |
 | `launchpad` | MCR/MKE/MSR versions and MKE admin credentials | - |
 | `windows_password` | Windows/WinRM password; generated when empty | `""` |
-| `common_tags` | Network tags applied to every instance | `[]` |
+| `common_tags` | GCP network tags applied to every instance (firewall targets, no values) | `[]` |
+| `labels` | GCP labels applied to every resource that supports them, merged over `environment` and `managed_by` | `{}` |
 
 ## Outputs
 

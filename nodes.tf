@@ -18,6 +18,7 @@ module "nodegroup" {
   ]
   public      = each.value.public
   tags        = [each.key]
+  labels      = merge(var.labels, each.value.labels)
   project     = var.project
   extra_tags  = var.extra_tags
   user_data   = each.value.user_data

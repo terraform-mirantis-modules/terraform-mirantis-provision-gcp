@@ -12,10 +12,11 @@ variable "rules" {
   }))
 }
 
-# variable "tags" {
-#   description = "tags to be applied to created resources"
-#   type        = map(string)
-# }
+variable "labels" {
+  description = "GCP labels applied to the ingress resources that support them (addresses and forwarding rules)."
+  type        = map(string)
+  default     = {}
+}
 
 // GCP variables
 

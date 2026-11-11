@@ -38,7 +38,6 @@ variable "firewalls" {
       source_address_prefix      = list(string)
       priority                   = number
     })), [])
-    tags = optional(map(string), {})
   }))
   default = {}
 }
@@ -60,7 +59,7 @@ variable "nodegroups" {
     ssh_user              = string
     user_data             = optional(string)
     instance_profile_name = optional(string)
-    tags                  = optional(map(string), {})
+    labels                = optional(map(string), {})
   }))
   default = {}
 }
@@ -90,15 +89,31 @@ variable "ingresses" {
     }))
     # "l7_https" (default, terminates TLS) or "tcp" (regional external
     # passthrough NLB; required for mTLS endpoints like the Kubernetes API).
-    mode = optional(string, "l7_https")
-    tags = optional(map(string), {})
+    mode   = optional(string, "l7_https")
+    labels = optional(map(string), {})
   }))
   default = {}
 }
 
+variable "labels" {
+  description = "Labels applied to every provisioned resource that supports GCP labels (instances, load-balancer addresses and forwarding rules). GCP labels are stricter than AWS/Azure tags: keys must start with a lowercase letter and hold only lowercase letters, digits, underscores and hyphens; values take the same characters and may be empty. Both are capped at 63 characters."
+  type        = map(string)
+  default     = {}
+
+  validation {
+    condition     = alltrue([for k in keys(var.labels) : can(regex("^[a-z][a-z0-9_-]{0,62}$", k))])
+    error_message = "Label keys must match ^[a-z][a-z0-9_-]{0,62}$ : lowercase letters, digits, underscores and hyphens only, starting with a letter. Dots, slashes and uppercase are rejected by GCP."
+  }
+
+  validation {
+    condition     = alltrue([for v in values(var.labels) : can(regex("^[a-z0-9_-]{0,63}$", v))])
+    error_message = "Label values must match ^[a-z0-9_-]{0,63}$ : lowercase letters, digits, underscores and hyphens only. Map characters GCP rejects (e.g. the @ and . of an email address) before passing them in."
+  }
+}
+
 
 variable "extra_tags" {
-  description = "Extra tags that will be added to all provisioned resources, where possible."
+  description = "Extra GCP network tags added to every provisioned instance. Network tags are firewall targets, not metadata: lowercase letters, digits and hyphens only, and they carry no values. For attribution use var.labels."
   type        = list(string)
   default     = []
 }

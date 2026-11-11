@@ -36,6 +36,10 @@ resource "google_compute_instance_template" "provision" {
     create_before_destroy = true
   }
   tags = concat(var.extra_tags, [for t in var.tags : lower(t)])
+  // Labels set on the template are copied onto every instance the group
+  // manager creates from it, which is what makes the VMs findable and
+  // billable per environment.
+  labels = var.labels
 
   disk {
     source_image = var.source_image.self_link

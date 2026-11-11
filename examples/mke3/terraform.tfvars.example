@@ -66,9 +66,18 @@ subnets = {
   # },
 }
 
+// GCP network tags: firewall targets, no values. Attribution uses labels.
 common_tags = [
   "dev",
   "mirantis",
-  "mirantis"
 ]
+
+// Labels land on the instances and the ingress address, and are what
+// `gcloud ... --filter=labels.owner=...` and the billing export can see.
+// Lowercase letters, digits, underscores and hyphens only - an email address
+// has to be mapped, e.g. jnesbitt_mirantis_com.
+labels = {
+  owner       = "jnesbitt_mirantis_com"
+  expiry_days = "7"
+}
 

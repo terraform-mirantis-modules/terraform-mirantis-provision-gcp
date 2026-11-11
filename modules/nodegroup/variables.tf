@@ -62,8 +62,14 @@ variable "public" {
 }
 
 variable "tags" {
-  description = "The tags to apply to the instances"
+  description = "GCP network tags to apply to the instances (firewall targets, lowercased)."
   type        = list(string)
+}
+
+variable "labels" {
+  description = "GCP labels applied to the instance template, and through it to every instance it creates."
+  type        = map(string)
+  default     = {}
 }
 
 variable "extra_tags" {

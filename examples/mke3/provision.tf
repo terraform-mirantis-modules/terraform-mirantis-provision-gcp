@@ -45,11 +45,16 @@ module "provision" {
     public : ngd.public
     user_data : strcontains(ngd.platform, "windows") ? local.user_data_windows : ngd.user_data
     ssh_user : ngd.ssh_user
+    labels : ngd.labels
   } }
   subnets    = var.subnets
   firewalls  = local.mke_firewalls
   ingresses  = local.mke_ingresses
   extra_tags = var.common_tags
+  labels = merge({
+    environment = lower(var.name)
+    managed_by  = "terraform"
+  }, var.labels)
 }
 
 locals {
