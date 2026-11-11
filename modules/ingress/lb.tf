@@ -36,6 +36,7 @@ resource "google_compute_global_address" "ingress" {
   count      = local.l7 ? 1 : 0
   name       = "${var.name}-lb-ipv4-${random_string.random_suffix.result}"
   ip_version = "IPV4"
+  labels     = var.labels
 }
 
 resource "google_compute_health_check" "ingress" {
@@ -136,6 +137,7 @@ resource "google_compute_global_forwarding_rule" "ingress" {
   port_range            = "${each.value.port_incoming}-${each.value.port_incoming}"
   target                = google_compute_target_https_proxy.ingress[0].id
   ip_address            = google_compute_global_address.ingress[0].id
+  labels                = var.labels
 }
 
 # === TCP passthrough (regional external NLB) ===
@@ -144,6 +146,7 @@ resource "google_compute_address" "tcp" {
   count  = var.mode == "tcp" ? 1 : 0
   name   = "${var.name}-nlb-ipv4-${random_string.random_suffix.result}"
   region = var.region
+  labels = var.labels
 }
 
 resource "google_compute_forwarding_rule" "tcp" {
@@ -158,4 +161,5 @@ resource "google_compute_forwarding_rule" "tcp" {
   # registers its instances there, so new instances join automatically. A pool
   # created here would stay empty and the LB would have no backends.
   target = var.target_pools[0]
+  labels = var.labels
 }

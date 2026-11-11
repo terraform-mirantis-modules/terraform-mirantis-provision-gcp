@@ -88,6 +88,7 @@ terraform destroy
 | `api_source_ranges` | CIDRs allowed to reach 6443 | `["0.0.0.0/0"]` |
 | `ssh_pk_location` | Directory to write the generated SSH private key into | `./ssh-keys` |
 | `extra_tags` | Extra GCP network tags applied to every instance | `[]` |
+| `labels` | GCP labels applied to every resource that supports them, merged over `environment` and `managed_by` | `{}` |
 
 ## Outputs
 

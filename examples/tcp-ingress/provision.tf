@@ -151,6 +151,7 @@ module "provision" {
   firewalls  = local.cluster_firewalls
   ingresses  = local.cluster_ingresses
   extra_tags = local.tags
+  labels     = local.labels
 }
 
 // locals calculated after the provision run

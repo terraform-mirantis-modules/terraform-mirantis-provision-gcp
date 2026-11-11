@@ -46,3 +46,11 @@ subnets = {
 extra_tags = [
   "dev",
 ]
+
+// Labels land on the instances, the NLB address and its forwarding rules.
+// Lowercase letters, digits, underscores and hyphens only - an email address
+// has to be mapped, e.g. jnesbitt_mirantis_com.
+labels = {
+  owner       = "jnesbitt_mirantis_com"
+  expiry_days = "7"
+}

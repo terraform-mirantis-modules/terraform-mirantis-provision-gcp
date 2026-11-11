@@ -1,5 +1,42 @@
 # Upgrading
 
+## v0.2.x -> v0.3.0
+
+### `tags` renamed to `labels`, and it now does something
+
+`nodegroups[*].tags` and `ingresses[*].tags` existed in the v0.2.x variable
+schema but were never read: `nodes.tf` passed `tags = [each.key]` to the
+nodegroup module and `ingress.tf` passed no tags at all, so a caller setting
+them got silent acceptance and no effect. `firewalls[*].tags` was the same,
+and `google_compute_firewall` has no labels to apply.
+
+In v0.3.0:
+
+- `nodegroups[*].tags` -> `nodegroups[*].labels`, applied to the nodegroup's
+  instance template and therefore to its instances.
+- `ingresses[*].tags` -> `ingresses[*].labels`, applied to the ingress
+  address and forwarding rules.
+- `firewalls[*].tags` is **removed** with no replacement.
+- new module-wide `var.labels`, merged under the per-entry maps.
+
+Callers that set the old `tags` attributes get an "unsupported attribute"
+error on plan. Rename them; the values must now satisfy GCP's label rules
+(lowercase letters, digits, underscores, hyphens; keys start with a letter),
+which the module validates.
+
+### Instance templates are replaced
+
+Setting a non-empty label map on an existing stack changes
+`google_compute_instance_template.provision`, which is immutable: the
+template is recreated and the instance group manager rolls every node,
+exactly as described for v0.1.x -> v0.2.x below. Upgrading a live stack to
+pick up labels costs a node roll; plan for it, or take labels only on newly
+created stacks. Leaving `var.labels` unset is expected to plan clean, but run
+`terraform plan` and read it rather than assuming so.
+
+The ingress addresses and forwarding rules take labels in place, with no
+replacement and no change to the published IP.
+
 ## v0.1.x -> v0.2.x
 
 Applying v0.2.x to a stack that was created with v0.1.x replaces network and

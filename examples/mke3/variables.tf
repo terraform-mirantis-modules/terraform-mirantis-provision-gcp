@@ -34,7 +34,7 @@ variable "nodegroups" {
     user                  = optional(string)
     user_data             = optional(string)
     instance_profile_name = optional(string)
-    tags                  = optional(map(string), {})
+    labels                = optional(map(string), {})
   }))
   default = {}
 }
@@ -54,4 +54,10 @@ variable "common_tags" {
   description = "Tags that should be applied to all resources created"
   type        = list(string)
   default     = []
+}
+
+variable "labels" {
+  description = "GCP labels applied to every resource that supports them, merged with the environment/managed_by pair the example sets. Lowercase letters, digits, underscores and hyphens only."
+  type        = map(string)
+  default     = {}
 }

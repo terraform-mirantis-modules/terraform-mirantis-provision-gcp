@@ -78,7 +78,15 @@ Fields with the same name mean the same thing in all three modules:
 | `role` | caller-defined purpose label |
 | `public` | whether machines get a public address |
 | `user_data` | cloud-init or equivalent, run at first boot |
-| `tags` | tags applied to the group's resources |
+| `labels` (GCP) / `tags` (AWS, Azure) | metadata applied to the group's resources |
+
+The three clouds spell the same idea differently, and the spellings are not
+interchangeable. AWS tags accept almost anything; Azure tag names reject `/`;
+GCP labels accept only lowercase letters, digits, underscores and hyphens in
+both key and value, so neither an AWS-style `example.com/environment` key nor
+Azure PascalCase survives the trip. GCP also has a second, unrelated concept
+called *network tags* (`extra_tags` here): valueless firewall targets, not
+metadata.
 
 The image reference is necessarily cloud-specific, because the clouds do not
 describe images the same way:

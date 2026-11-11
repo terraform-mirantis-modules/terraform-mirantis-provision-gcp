@@ -59,3 +59,9 @@ variable "extra_tags" {
   type        = list(string)
   default     = []
 }
+
+variable "labels" {
+  description = "GCP labels applied to every resource that supports them, merged with the environment/managed_by pair the example sets. Keys and values take lowercase letters, digits, underscores and hyphens only."
+  type        = map(string)
+  default     = {}
+}
