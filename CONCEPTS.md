@@ -152,6 +152,22 @@ The practical consequence is that membership follows the group with no
 terraform run: scaling a nodegroup adds and removes load balancer targets by
 itself, and produces no diff in a subsequent plan.
 
+**The firewall has to admit `port_target`, not `port_incoming`.** A route that
+translates ports (`port_incoming != port_target`) delivers the packet to the
+machine on `port_target`, and that is the port the security group or firewall
+rule is matched against: AWS registers the instance in the target group on
+`port_target`, Azure's load balancer rewrites the destination port before the
+NSG attached to the NIC or subnet sees the packet, and GCP rejects translating
+routes outright in `tcp` mode. Admitting only `port_incoming` produces a stack
+that looks entirely healthy and refuses every connection: the load balancer
+rule exists, the backend is attached, and the health probe passes, because
+probes come from the platform's own source range and are allowed by a rule of
+their own (`AllowAzureLoadBalancerInBound` on Azure, the health-check ranges
+documented in the GCP `tcp-ingress` example). Only client traffic is dropped.
+A route of `443 -> 33001` needs 33001 admitted from the client addresses;
+adding `port_incoming` as well is harmless but only matters for clients
+reaching a machine directly rather than through the load balancer.
+
 GCP additionally takes `mode` on each ingress. The default `l7_https` is a
 global HTTPS proxy that terminates TLS. `tcp` is a regional passthrough
 network load balancer and is required for endpoints that need the client's
