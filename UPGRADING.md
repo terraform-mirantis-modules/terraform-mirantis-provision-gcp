@@ -1,16 +1,16 @@
 # Upgrading
 
-## v0.2.x -> v0.3.0
+## v0.4.x -> v0.5.0
 
 ### `tags` renamed to `labels`, and it now does something
 
-`nodegroups[*].tags` and `ingresses[*].tags` existed in the v0.2.x variable
-schema but were never read: `nodes.tf` passed `tags = [each.key]` to the
-nodegroup module and `ingress.tf` passed no tags at all, so a caller setting
-them got silent acceptance and no effect. `firewalls[*].tags` was the same,
-and `google_compute_firewall` has no labels to apply.
+`nodegroups[*].tags` and `ingresses[*].tags` existed in the variable schema
+up to v0.4.x but were never read: `nodes.tf` passed `tags = [each.key]` to
+the nodegroup module and `ingress.tf` passed no tags at all, so a caller
+setting them got silent acceptance and no effect. `firewalls[*].tags` was the
+same, and `google_compute_firewall` has no labels to apply.
 
-In v0.3.0:
+In v0.5.0:
 
 - `nodegroups[*].tags` -> `nodegroups[*].labels`, applied to the nodegroup's
   instance template and therefore to its instances.
